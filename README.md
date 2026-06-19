@@ -4,8 +4,15 @@ Extract detailed timetables from Indico event pages and turn them into Apple Cal
 
 This is useful for conference, workshop, and summer-school pages where the official Indico calendar export exists but only contains one broad event for the whole meeting. The detailed lecture-by-lecture schedule is often present only in the timetable HTML.
 
+## Intended Use
+
+This repository is structured as a Codex skill first. The expected workflow is that an agent reads `SKILL.md`, checks whether the official Indico `.ics` is detailed enough, dry-runs the parser, disambiguates the target Apple Calendar account if needed, and only then imports events or writes a detailed `.ics` file.
+
+Humans can still run the bundled script directly; the command examples below are the deterministic steps the agent is expected to use.
+
 ## What It Does
 
+- Guides an agent through official `.ics` inspection, timetable parsing, target-calendar disambiguation, dry-run validation, and import.
 - Parses detailed Indico timetable pages such as `https://indico.example.org/event/12345/timetable/`.
 - Counts the official top-level `event.ics` entries so you can tell whether it is useful.
 - Preserves talks, discussions, coffee breaks, and lunch breaks by default.
@@ -14,7 +21,7 @@ This is useful for conference, workshop, and summer-school pages where the offic
 - On macOS, imports directly into Apple Calendar through AppleScript.
 - Handles source timezone to local timezone conversion for Apple Calendar imports.
 
-## Quick Start
+## Manual CLI Quick Start
 
 Run a dry parse first:
 
