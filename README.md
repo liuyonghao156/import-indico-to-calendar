@@ -14,6 +14,7 @@ Humans can still run the bundled script directly; the command examples below are
 
 - Guides an agent through official `.ics` inspection, timetable parsing, target-calendar disambiguation, dry-run validation, and import.
 - Parses detailed Indico timetable pages such as `https://indico.example.org/event/12345/timetable/`.
+- Supports older Indico timetable HTML and Indico v3 pages that embed timetable data in `timetableArgs`.
 - Counts the official top-level `event.ics` entries so you can tell whether it is useful.
 - Preserves talks, discussions, coffee breaks, and lunch breaks by default.
 - Extracts speakers when Indico exposes them in the timetable HTML.
@@ -119,7 +120,7 @@ Then ask Codex to use `$import-indico-to-calendar` for Indico-to-calendar tasks.
 
 ## Limitations
 
-- The parser targets the classic Indico timetable HTML structure with `meetingContrib` and `breakListItem` entries.
+- The parser targets the classic Indico timetable HTML structure and Indico v3's embedded `timetableArgs` format. Other heavily customized Indico timetable templates may still need parser updates.
 - Direct Apple Calendar import depends on macOS AppleScript support, which can be slow for many events.
 - Duplicate checking compares event summary and start time in the target calendar. Use `--no-duplicate-check` only if duplicates are acceptable.
 

@@ -1,6 +1,6 @@
 ---
 name: import-indico-to-calendar
-description: Extract detailed schedules from Indico conference/event pages and import them into Apple Calendar on macOS. Use when the user asks to find or verify Indico .ics exports, convert an Indico timetable into calendar events, add an Indico programme to Apple Calendar, or target a specific Apple Calendar account/calendar such as Exchange/iCloud/Google calendars with duplicate names.
+description: Extract detailed schedules from classic and Indico v3 conference/event pages and import them into Apple Calendar on macOS. Use when the user asks to find or verify Indico .ics exports, convert an Indico timetable into calendar events, add an Indico programme to Apple Calendar, or target a specific Apple Calendar account/calendar such as Exchange/iCloud/Google calendars with duplicate names.
 ---
 
 # Import Indico To Calendar
@@ -11,6 +11,8 @@ description: Extract detailed schedules from Indico conference/event pages and i
    - Try `<event-url>/event.ics` for an event-level calendar feed.
    - Count `VEVENT` entries before trusting it. Some Indico deployments expose only one broad all-school/conference event while the detailed timetable exists only in HTML.
 2. Parse the detailed timetable with `scripts/indico_to_apple_calendar.py`.
+   - The script first tries the older timetable HTML rows (`meetingContrib` / `breakListItem`).
+   - If those rows are absent, it falls back to Indico v3's embedded `timetableArgs` data and flattens session blocks into individual contribution events.
 3. If importing into Apple Calendar, identify the target calendar precisely:
    - Run AppleScript list commands to get calendar order and writability.
    - When duplicate names exist, use Computer Use or Chronicle to inspect Calendar.app's sidebar account groups. Calendar sidebar order normally matches AppleScript calendar index order.
