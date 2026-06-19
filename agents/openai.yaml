@@ -1,0 +1,4 @@
+interface:
+  display_name: "Import Indico To Calendar"
+  short_description: "Import Indico timetables to Apple Calendar"
+  default_prompt: "Use $import-indico-to-calendar to import the detailed timetable from an Indico event page into Apple Calendar."
