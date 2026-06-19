@@ -23,8 +23,9 @@ Humans can still run the bundled script directly; the command examples below are
 - On macOS, imports directly into Apple Calendar through AppleScript.
 - Handles source timezone to local timezone conversion for Apple Calendar imports.
 - Handles IANA and common legacy timezone names such as `US/Eastern`.
+- Reports empty or not-yet-published standard timetables as `items=0` during dry runs. If no timezone is exposed on an empty page, `UTC` is used only as a harmless dry-run sentinel.
 
-The parser has been dry-run against public events on ICTP, IHEP, CERN, DESY, IN2P3, TRIUMF, PSI, and Jefferson Lab Indico services. Some events intentionally return `items=0` because they have no published standard timetable yet; the dry run makes that visible before any import.
+The parser has been dry-run against public events on ICTP, IHEP, CERN, DESY, IN2P3, TRIUMF, PSI, Jefferson Lab, GSI, ESS, SLAC, IPMU, STFC, and Nikhef Indico services. Some events intentionally return `items=0` because they have no published standard timetable yet; the dry run makes that visible before any import.
 
 ## Manual CLI Quick Start
 
@@ -104,10 +105,18 @@ python3 scripts/indico_to_apple_calendar.py \
   --source-timezone Europe/Rome
 ```
 
+If a page has no parsed timetable items and exposes no timezone, dry-run mode reports `source_timezone=UTC` so the agent can record a clean `items=0` result. Pages with parsed items still fail closed when the timezone cannot be detected; pass `--source-timezone` in that case.
+
 ## Code Layout
 
 - `scripts/indico_to_apple_calendar.py` is the stable executable wrapper used by agents and humans.
-- `scripts/indico_calendar/subroutines.py` contains the parser modes, timezone handling, `.ics` writing, and AppleScript generation.
+- `scripts/indico_calendar/cli.py` contains the command-line workflow.
+- `scripts/indico_calendar/core.py` contains shared data types, text cleanup, timezone handling, datetime conversion, and escaping helpers.
+- `scripts/indico_calendar/fetching.py` contains URL normalization, timetable fetching, and official `.ics` inspection.
+- `scripts/indico_calendar/parser_classic.py`, `parser_v3.py`, and `parser_server_rendered.py` contain the separate parser modes.
+- `scripts/indico_calendar/parsers.py` dispatches between parser modes in priority order.
+- `scripts/indico_calendar/calendar_io.py` writes detailed `.ics` files and generates/runs Apple Calendar AppleScript.
+- `scripts/indico_calendar/subroutines.py` re-exports the broad helper surface for older examples and agent workflows.
 - `scripts/indico_calendar/__init__.py` marks the helper module package.
 
 ## Install As A Codex Skill

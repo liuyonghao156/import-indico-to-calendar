@@ -20,6 +20,8 @@ description: Extract detailed schedules from classic and Indico v3 conference/ev
    - When duplicate names exist, use Computer Use or Chronicle to inspect Calendar.app's sidebar account groups. Calendar sidebar order normally matches AppleScript calendar index order.
    - Prefer `--calendar-index` over name matching for duplicate names.
 4. Run a dry import first. Check item count, first/last items, timezone, and whether breaks are included.
+   - `items=0` is a valid result for empty, hidden, or not-yet-published standard timetables. If the page also exposes no timezone, the CLI reports `source_timezone=UTC` only to complete the empty dry run.
+   - If items are present but timezone detection fails, stop and rerun with `--source-timezone`.
 5. Import only after the target calendar and slot count are clear.
 
 ## Script
@@ -44,7 +46,16 @@ Useful options:
 
 The script converts source event times to the Mac's local timezone before using AppleScript, because Calendar's AppleScript date constructor creates local-time dates.
 
-Most reusable code lives in `scripts/indico_calendar/subroutines.py`; `scripts/indico_to_apple_calendar.py` is intentionally only the stable CLI wrapper.
+Code is split by responsibility:
+
+- `scripts/indico_to_apple_calendar.py` is intentionally only the stable CLI wrapper.
+- `scripts/indico_calendar/cli.py` owns the CLI workflow.
+- `scripts/indico_calendar/core.py` owns shared subroutines such as timetable items, text cleanup, timezone conversion, and escaping.
+- `scripts/indico_calendar/parser_classic.py`, `parser_v3.py`, and `parser_server_rendered.py` own the parser modes.
+- `scripts/indico_calendar/parsers.py` dispatches between parser modes.
+- `scripts/indico_calendar/fetching.py` owns URL/network helpers.
+- `scripts/indico_calendar/calendar_io.py` owns `.ics` and Apple Calendar output.
+- `scripts/indico_calendar/subroutines.py` re-exports the broad helper surface for older examples and agent workflows.
 
 ## Apple Calendar Notes
 
