@@ -1,6 +1,6 @@
 ---
 name: import-indico-to-calendar
-description: Extract detailed schedules from classic and Indico v3 conference/event pages and import them into Apple Calendar on macOS. Use when the user asks to find or verify Indico .ics exports, convert an Indico timetable into calendar events, add an Indico programme to Apple Calendar, or target a specific Apple Calendar account/calendar such as Exchange/iCloud/Google calendars with duplicate names.
+description: Extract detailed schedules from classic and Indico v3 conference/event pages and import them into Apple Calendar on macOS. Use when the user asks to find or verify Indico .ics exports, convert an Indico timetable into calendar events, add an Indico programme to Apple Calendar, broaden parser coverage across Indico services, or target a specific Apple Calendar account/calendar such as Exchange/iCloud/Google calendars with duplicate names.
 ---
 
 # Import Indico To Calendar
@@ -13,6 +13,8 @@ description: Extract detailed schedules from classic and Indico v3 conference/ev
 2. Parse the detailed timetable with `scripts/indico_to_apple_calendar.py`.
    - The script first tries the older timetable HTML rows (`meetingContrib` / `breakListItem`).
    - If those rows are absent, it falls back to Indico v3's embedded `timetableArgs` data and flattens session blocks into individual contribution events.
+   - If neither format is present, it parses server-rendered Indico 3 timetable markup (`timetable-item`, `timetable-block`, `timetable-contrib`, `timetable-break`).
+   - Some Indico 3 events serve timetable rows at `/event/<id>/` instead of `/event/<id>/timetable/`; the CLI falls back to the event root when the timetable route returns 404.
 3. If importing into Apple Calendar, identify the target calendar precisely:
    - Run AppleScript list commands to get calendar order and writability.
    - When duplicate names exist, use Computer Use or Chronicle to inspect Calendar.app's sidebar account groups. Calendar sidebar order normally matches AppleScript calendar index order.
@@ -41,6 +43,8 @@ Useful options:
 - `--no-duplicate-check`: skip duplicate checks when speed matters and duplicates are acceptable.
 
 The script converts source event times to the Mac's local timezone before using AppleScript, because Calendar's AppleScript date constructor creates local-time dates.
+
+Most reusable code lives in `scripts/indico_calendar/subroutines.py`; `scripts/indico_to_apple_calendar.py` is intentionally only the stable CLI wrapper.
 
 ## Apple Calendar Notes
 

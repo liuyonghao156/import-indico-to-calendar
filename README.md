@@ -14,13 +14,17 @@ Humans can still run the bundled script directly; the command examples below are
 
 - Guides an agent through official `.ics` inspection, timetable parsing, target-calendar disambiguation, dry-run validation, and import.
 - Parses detailed Indico timetable pages such as `https://indico.example.org/event/12345/timetable/`.
-- Supports older Indico timetable HTML and Indico v3 pages that embed timetable data in `timetableArgs`.
+- Supports older Indico timetable HTML, Indico v3 pages that embed timetable data in `timetableArgs`, and server-rendered Indico 3 timetable markup.
+- Falls back from `/event/<id>/timetable/` to `/event/<id>/` for deployments that render the timetable on the event root.
 - Counts the official top-level `event.ics` entries so you can tell whether it is useful.
 - Preserves talks, discussions, coffee breaks, and lunch breaks by default.
 - Extracts speakers when Indico exposes them in the timetable HTML.
 - Writes a detailed `.ics` file for any calendar app.
 - On macOS, imports directly into Apple Calendar through AppleScript.
 - Handles source timezone to local timezone conversion for Apple Calendar imports.
+- Handles IANA and common legacy timezone names such as `US/Eastern`.
+
+The parser has been dry-run against public events on ICTP, IHEP, CERN, DESY, IN2P3, TRIUMF, PSI, and Jefferson Lab Indico services. Some events intentionally return `items=0` because they have no published standard timetable yet; the dry run makes that visible before any import.
 
 ## Manual CLI Quick Start
 
@@ -100,6 +104,12 @@ python3 scripts/indico_to_apple_calendar.py \
   --source-timezone Europe/Rome
 ```
 
+## Code Layout
+
+- `scripts/indico_to_apple_calendar.py` is the stable executable wrapper used by agents and humans.
+- `scripts/indico_calendar/subroutines.py` contains the parser modes, timezone handling, `.ics` writing, and AppleScript generation.
+- `scripts/indico_calendar/__init__.py` marks the helper module package.
+
 ## Install As A Codex Skill
 
 Clone this repository into your Codex skills directory:
@@ -120,7 +130,7 @@ Then ask Codex to use `$import-indico-to-calendar` for Indico-to-calendar tasks.
 
 ## Limitations
 
-- The parser targets the classic Indico timetable HTML structure and Indico v3's embedded `timetableArgs` format. Other heavily customized Indico timetable templates may still need parser updates.
+- The parser targets classic Indico timetable HTML, Indico v3's embedded `timetableArgs` format, and server-rendered Indico 3 timetable markup. Other heavily customized Indico timetable templates may still need parser updates.
 - Direct Apple Calendar import depends on macOS AppleScript support, which can be slow for many events.
 - Duplicate checking compares event summary and start time in the target calendar. Use `--no-duplicate-check` only if duplicates are acceptable.
 
